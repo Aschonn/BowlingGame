@@ -1,12 +1,12 @@
-from pickle import NONE, TRUE
 import re
-from xml.etree.ElementTree import XML
 
 class BowlingGame:
 
+    #############################
+
     def __init__(self):
         self.rollList = [0] * 21 # nested list for scores
-        self.score = None # will be final outcome
+        self.score = None #display nothing as default
 
     #############################
 
@@ -22,7 +22,6 @@ class BowlingGame:
         returns either a list or int
     '''
 
-    #############################
 
     def getScore(self):
         return self.score
@@ -36,7 +35,6 @@ class BowlingGame:
                 print("invalid number. Must be between 0 and 300.")
         else:
             print("This functions only accepts integers.")        
-
             
     def getRollList(self):
         return self.rollList
@@ -47,8 +45,6 @@ class BowlingGame:
             self.rollList = newscorelist
         else:
             print("Unable to setlist due to not correct number of values.")
-
-
 
     ##############################
 
@@ -62,15 +58,22 @@ class BowlingGame:
             Args:
                 No args
             Returns:
-                list that is completely empty
+                object list value gets reset to zeros
 
         '''
-
         self.rollList = [0] * 21
 
 
     def dropItemNextToStrike(self, index):
-        
+
+        '''           
+            Function: Removes zero (roll) from list everytime a strike appears in the first 9 frames
+            Args:
+                takes index so it can remove the next zero
+            Returns:
+                object list value gets reset to zeros
+
+        '''
         try:
             self.rollList.pop(index + 1)
         except:
@@ -95,8 +98,10 @@ class BowlingGame:
                     1) Cannot be equal to more than 9
             
             Returns:
-                returns true false value whether roll is 
+                returns true or false value whether roll is valid or not.
+        
         '''
+
         if frame != 10:
             if value.upper() == "X" and count == 1:
                 self.dropItemNextToStrike(index)
@@ -137,7 +142,6 @@ class BowlingGame:
                 return True
 
 
-
     def filter(self, value):
 
         '''
@@ -158,8 +162,6 @@ class BowlingGame:
             print("invalid format for roll")
             return False
         
-
-
     def spare(self, nextroll):
 
 
@@ -178,8 +180,6 @@ class BowlingGame:
             total += int(nextroll)
         
         return total
-
-
 
     def strike(self, nextrolls):
 
@@ -212,15 +212,14 @@ class BowlingGame:
         return total
 
 
-
     def calcScore(self):
 
         '''
-            Function: Calculates score from scoreList
+            Function: Calculates score from rolllist after user has inputed list or set list
             Args:
-                accepts object parameter of scoreList (char)
+                accepts object parameter of rolllist (all values are string)
             Returns:
-                calculated score of all ten frames and changed self.score score
+                calculated score of all ten frames and changed self.score to generated score
         '''
         frame = 1
         count = 0
@@ -269,7 +268,7 @@ class BowlingGame:
                     
 
 
-    def addScores(self, testcase = []):
+    def addScores(self):
 
         '''
         Function: Sets user inputed data in the rollList attribute
@@ -284,69 +283,62 @@ class BowlingGame:
         print("Accepts 0-9 numbers, X (case doesnt matter), and /\n")
         print("only one character/number is allowed")
 
-        if testcase != []:
-            self.setRollList(newList = testcase)
-        
-        else:
+        frame = 1
+        count = 1
+        rollNum = 0
+        prev = None
 
-            frame = 1
-            count = 1
-            rollNum = 0
-            listLength = len(self.rollList)
-            prev = None
+        while frame != 10:
 
-            while frame != 10:
-
+            roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
+            while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
                 roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
-                while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
-                    roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
+            
+
+            #testing purposes
+            # print("rollnum", rollNum)
+            # print("frame:", frame)
+            # print("listlength", listLength)
+            # print("previous:", prev)
+
+            # calculates and keeps track of frames
+
+            if roll.upper() == "X" or count == 2:
+                frame += 1  
+                count = 1
+            else:
+                count += 1
+
+
+
+            self.rollList[rollNum] = roll            #sets rollscore to list
+            rollNum += 1                             #goes to next roll
+            prev = roll                              #keeps track of previous roll
+
+
+        # holds values for last frame
+
+        frame10 = []
+
+        # gets first two value (mandatory)
+
+        for i in range(2):
+            roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
+            while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
+                roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
+            frame10.append(roll)
+            self.rollList[rollNum] = roll
+            rollNum += 1
+            prev = roll
+
+        # grabs last value in frame if it meet criteria
                 
-
-                #testing purposes
-                # print("rollnum", rollNum)
-                # print("frame:", frame)
-                # print("listlength", listLength)
-                # print("previous:", prev)
-
-                # calculates frames
-                if roll.upper() == "X" or count == 2:
-                    frame += 1  
-                    count = 1
-                else:
-                    count += 1
-
-                #sets rollscore to list
-                self.rollList[rollNum] = roll
-                #goes to next roll
-                rollNum += 1
-                #keeps track of updating list
-                listLength = len(self.rollList)
-                #keeps track of previous roll
-                prev = roll
-
-            # holds values for last frame
-
-            frame10 = []
-
-            # gets first two value (mandatory)
-
-            for i in range(2):
+        if "/" in frame10 or "X" in frame10 or 'x' in frame10:
+            roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
+            while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
                 roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
-                while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
-                    roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
-                frame10.append(roll)
-                self.rollList[rollNum] = roll
-                rollNum += 1
-                prev = roll
-
-            # grabs last value in frame if it meet criteria
-                    
-            if "/" in frame10 or "X" in frame10 or 'x' in frame10:
-                roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
-                while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
-                    roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
-                self.rollList[rollNum] = roll
-                prev = roll
+            self.rollList[rollNum] = roll
+            prev = roll
 
 
     # print object

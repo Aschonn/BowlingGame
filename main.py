@@ -1,4 +1,4 @@
-from Game import BowlingGame
+from Bowling import BowlingGame
 
 
 
