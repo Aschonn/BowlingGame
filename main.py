@@ -1,7 +1,5 @@
 from Bowling import BowlingGame
-
-
-
+from test_bowling import TestBowling
 
 def main():
 
@@ -20,7 +18,6 @@ def main():
 
     # outputs changes
     print(game1)
-
 
 
 main()

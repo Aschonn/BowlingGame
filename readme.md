@@ -7,21 +7,17 @@ If you roll a spare in the first two shots of the 10th frame, you get 1 more sho
 If you leave the 10th frame open after two shots, the game is over and you do not get an additional shot.
 
 How to run:
-1) type `python bowling.py`
-2) Enter in scores
-3) If successful it should output all frames as inputed as well as score.
+1) Test class `python test_bowling`  
+2) Try main file `python main.py`
+3) Enter in scores and it will guide you along the way
+4) If successful it should output all frames as inputed as well as score.
 
 Improvements:
+Refactor code and start testing before coding.
 
-Instead of writing the code frame by frame it would have been easier to go roll by roll. The data checking process would have been easier. Sadly, in the middle of finals I wasn't able to implement that solution. Also adding more try-excepts would make this more efficient and would work better than using if-elif-else, but I went for readability.
 
-
-Side Note:
-
-I am sorry for being late. I honestly thought the due date was on the 4th and thought I could submit it today (5/4). Plus finals and group projects don't make things easier, but that is no excuse. I will communicate more effectively from now on. 
-
-Bugs:
-
-if user enters in '3/' it will only provide the error "an error has occured in function "checkValidity"
-
-if user outputs a spare, strike, strike the spare will add the current value of strike than update value
+File:
+main.py      -> main executable file for project
+test_bowling -> test class for bowling class
+Bowling.py   -> object class that calculates and keeps track of bowling scores and roll scores
+readme       -> Documentation
