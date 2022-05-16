@@ -1,4 +1,4 @@
-from pickle import TRUE
+from pickle import NONE, TRUE
 import re
 from xml.etree.ElementTree import XML
 
@@ -6,7 +6,7 @@ class BowlingGame:
 
     def __init__(self):
         self.rollList = [0] * 21 # nested list for scores
-        self.score = 0 # will be final outcome
+        self.score = None # will be final outcome
 
     #############################
 
@@ -28,20 +28,33 @@ class BowlingGame:
         return self.score
 
     def setScore(self, num):
-        try:
-            self.score = int(num)
-        except:
-            print("setScore allows only integers.")
 
+        if type(num) == int:
+            if num >= 0 and num <= 300:
+                self.score = int(num)
+            else:
+                print("invalid number. Must be between 0 and 300.")
+        else:
+            print("This functions only accepts integers.")        
+
+            
     def getRollList(self):
         return self.rollList
+
+    def setRollList(self, newscorelist):
+
+        if len(newscorelist) >= 12 or len(newscorelist) <= 21:
+            self.rollList = newscorelist
+        else:
+            print("Unable to setlist due to not correct number of values.")
+
 
 
     ##############################
 
         
 
-    def resetScoreList(self):
+    def resetRollList(self):
 
         '''
            
@@ -53,7 +66,7 @@ class BowlingGame:
 
         '''
 
-        self.scoreList = []
+        self.rollList = [0] * 21
 
 
     def dropItemNextToStrike(self, index):
@@ -122,7 +135,6 @@ class BowlingGame:
                 return False
             else:
                 return True
-            # return True
 
 
 
@@ -138,7 +150,6 @@ class BowlingGame:
             Returns:
                 return value (true) or nothing (False)
         '''
-        #allows to supply an error message if user submits invalid roll
 
         pattern = re.compile('^[0-9 xX\/]$')
         if re.match(pattern, value):
@@ -149,7 +160,7 @@ class BowlingGame:
         
 
 
-    def spare(self, index):
+    def spare(self, nextroll):
 
 
         '''
@@ -160,10 +171,7 @@ class BowlingGame:
                 returns sum from strike
         '''
 
-    #calls itself and outputs total from current roll plus next roll
-
         total = 10 
-        nextroll = self.rollList[index + 1]
         if not type(nextroll) == int and nextroll.upper() == "X":
             total += 10
         else:
@@ -173,7 +181,7 @@ class BowlingGame:
 
 
 
-    def strike(self, index):
+    def strike(self, nextrolls):
 
         '''
             Function: outputs score from strike and adds next two rolls
@@ -186,7 +194,7 @@ class BowlingGame:
 
         total = 10
         prev = None
-        for i in self.rollList[index + 1: index + 3]:
+        for i in nextrolls:
             if type(i) == int:               
                 total += int(i)
             elif i.upper() == "X":
@@ -197,7 +205,8 @@ class BowlingGame:
 
             prev = i
 
-        print(f"rolls after: {self.rollList[index + 1 : index + 3]}\nTotal: {total}")
+        #testing
+        # print(f"rolls after: {self.rollList[index + 1 : index + 3]}\nTotal: {total}")
  
 
         return total
@@ -220,10 +229,7 @@ class BowlingGame:
         sumList = []
         for index, roll in enumerate(self.rollList):
             
-            if frame != 10:
-
-                print(index, len(self.rollList))
-
+            if frame != 10 and index < len(self.rollList) - 3:
 
                 if str(roll).isdigit():
                     sum += int(roll)
@@ -232,12 +238,11 @@ class BowlingGame:
                     else:
                         count = 2
                 elif roll.upper() == "X":
-                    sum += self.strike(index)
-                    print("afterstriek:", sum)
+                    sum += self.strike(self.rollList[index + 1: index + 3])
                     frame += 1
 
                 else:
-                    sum += self.spare(index) - int(prev)
+                    sum += self.spare(self.rollList[index + 1]) - int(prev)
                     frame += 1
 
 
@@ -255,8 +260,10 @@ class BowlingGame:
             sumList.append(sum)
             prev = roll
 
+        # TESTING
+        # print(sumList)
 
-        print(sumList)
+
         self.setScore(sum)
 
                     
@@ -290,16 +297,16 @@ class BowlingGame:
 
             while frame != 10:
 
-                print("prev:",prev)
-
                 roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
                 while not (self.filter(roll) and self.checkValidity(roll, rollNum, frame, prev, count)):
                     roll = input(f"Frame ({frame}) Roll: ({count}) RollTotal: ({rollNum + 1}) roll score = ")
                 
-                print("rollnum", rollNum)
-                print("frame:", frame)
-                print("listlength", listLength)
-                print("previous:", prev)
+
+                #testing purposes
+                # print("rollnum", rollNum)
+                # print("frame:", frame)
+                # print("listlength", listLength)
+                # print("previous:", prev)
 
                 # calculates frames
                 if roll.upper() == "X" or count == 2:
@@ -342,7 +349,7 @@ class BowlingGame:
                 prev = roll
 
 
-    # #print object
+    # print object
 
     def __str__ (self):
         return 'RollList: ' + str(self.getRollList()) + '\n' + 'Score:' + str(self.getScore())
